@@ -44,9 +44,18 @@ This will:
 
 1. Clean prior staging output  
 2. Resolve the official podspec on `cdn.cocoapods.org` and download the `dl.google.com` tarball  
-3. Extract `Frameworks/TensorFlowLiteC.xcframework` (already present for 2.11.0)  
-4. Validate slices, repair **framework** `Info.plist` only when missing (see `Artifacts/METADATA_MODIFICATIONS.log`)  
-5. Install `Artifacts/TensorFlowLiteC.xcframework` and write `Artifacts/PROVENANCE.txt`
+3. Extract the official `Frameworks/TensorFlowLiteC.xcframework` (framework layout from Google)  
+4. **Re-pack** it as a **static-library** XCFramework (`libTensorFlowLiteC.a` + `Headers/`) so SwiftPM/Xcode **link** TensorFlow Lite instead of **embedding** `TensorFlowLiteC.framework` in the app bundle (App Store rejection)  
+5. Validate slices and install `Artifacts/TensorFlowLiteC.xcframework` + `Artifacts/PROVENANCE.txt`
+
+### App Store / Bitrise: “framework embedded in the app bundle”
+
+The official CocoaPods artifact is a **static** Mach-O (`filetype OBJECT`) inside `TensorFlowLiteC.framework`.  
+When that framework-style XCFramework is exposed through SPM, Xcode often **copies** `TensorFlowLiteC.framework` into `Payload/YourApp.app/Frameworks/`, which fails App Store validation.
+
+This package’s build script converts the same Google binaries to **`libTensorFlowLiteC.a`** slices. The SPM product **`TensorFlowLiteC`** still exposes module **`TensorFlowLiteC`** (`import TensorFlowLiteC` / C headers unchanged).
+
+In the **consumer app**, keep the package product on **Do Not Embed** (link only). Do not strip frameworks from the IPA manually.
 
 Optional CocoaPods download (packaging machines only):
 

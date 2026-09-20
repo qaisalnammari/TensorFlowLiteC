@@ -16,6 +16,9 @@ ARTIFACTS_DIR="${REPO_ROOT}/Artifacts"
 XCFRAMEWORK_NAME="TensorFlowLiteC.xcframework"
 FINAL_XCFRAMEWORK="${ARTIFACTS_DIR}/${XCFRAMEWORK_NAME}"
 PROVENANCE_FILE="${ARTIFACTS_DIR}/PROVENANCE.txt"
+MODIFICATIONS_LOG="${CACHE_DIR}/metadata_modifications.log"
+STATIC_LIB_BASENAME="libTensorFlowLiteC.a"
+MODULEMAP_NAME="module.modulemap"
 
 log() {
   printf '[TensorFlowLiteC-SPM] %s\n' "$*" >&2

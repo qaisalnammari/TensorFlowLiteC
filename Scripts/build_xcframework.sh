@@ -44,6 +44,52 @@ print_discovered_files() {
       done
 }
 
+FRAMEWORK_XCFRAMEWORK="${STAGING_DIR}/TensorFlowLiteC.framework-style.xcframework"
+
+# Official CocoaPods artifact is a *static* Mach-O inside TensorFlowLiteC.framework folders.
+# That layout makes Xcode/SPM copy TensorFlowLiteC.framework into the app bundle (App Store rejection).
+# Re-pack as a static-library XCFramework (libTensorFlowLiteC.a + Headers) for correct link-only behavior.
+convert_framework_xcframework_to_static_library() {
+  local src_xc="$1"
+  local out_xc="$2"
+  require_cmd xcodebuild
+
+  local prep="${STAGING_DIR}/static-lib-prep"
+  rm -rf "${prep}"
+  mkdir -p "${prep}"
+
+  local -a xcbf_args=()
+  local slice_dir slice_id fw headers_dir lib_path
+  while read -r slice_dir; do
+    [[ -n "${slice_dir}" ]] || continue
+    slice_id="$(basename "${slice_dir}")"
+    fw="${slice_dir}/TensorFlowLiteC.framework"
+    [[ -d "${fw}" ]] || die "Expected TensorFlowLiteC.framework in slice ${slice_id}"
+
+    local bin="${fw}/TensorFlowLiteC"
+    [[ -f "${bin}" ]] || die "Missing static binary ${bin}"
+
+    local slice_prep="${prep}/${slice_id}"
+    mkdir -p "${slice_prep}/Headers"
+    cp "${bin}" "${slice_prep}/${STATIC_LIB_BASENAME}"
+    ditto "${fw}/Headers" "${slice_prep}/Headers"
+    if [[ -f "${fw}/Modules/${MODULEMAP_NAME}" ]]; then
+      cp "${fw}/Modules/${MODULEMAP_NAME}" "${slice_prep}/Headers/${MODULEMAP_NAME}"
+    fi
+
+    log "Static library slice prep ${slice_id}:"
+    log "  lib: ${slice_prep}/${STATIC_LIB_BASENAME} (from ${bin})"
+    log "  headers: ${slice_prep}/Headers"
+
+    xcbf_args+=(-library "${slice_prep}/${STATIC_LIB_BASENAME}" -headers "${slice_prep}/Headers")
+  done < <(find "${src_xc}" -mindepth 1 -maxdepth 1 -type d ! -name '.*' | sort)
+
+  [[ ${#xcbf_args[@]} -gt 0 ]] || die "No slices found to convert in ${src_xc}"
+  rm -rf "${out_xc}"
+  log "Creating static-library ${XCFRAMEWORK_NAME} (link-only, no framework bundle embed) ..."
+  xcodebuild -create-xcframework "${xcbf_args[@]}" -output "${out_xc}"
+}
+
 copy_or_build_xcframework() {
   local pod_root="$1"
   rm -rf "${STAGING_DIR}"
@@ -52,9 +98,10 @@ copy_or_build_xcframework() {
   local existing_xc
   existing_xc="$(locate_xcframework_in_pod "${pod_root}")"
   if [[ -n "${existing_xc}" && -d "${existing_xc}" ]]; then
-    log "Reusing existing XCFramework from official pod:"
+    log "Reusing existing XCFramework from official pod (framework layout):"
     log "  Source: ${existing_xc}"
-    ditto "${existing_xc}" "${WORK_XCFRAMEWORK}"
+    ditto "${existing_xc}" "${FRAMEWORK_XCFRAMEWORK}"
+    convert_framework_xcframework_to_static_library "${FRAMEWORK_XCFRAMEWORK}" "${WORK_XCFRAMEWORK}"
     return 0
   fi
 
@@ -71,8 +118,9 @@ copy_or_build_xcframework() {
     xcbf_args+=(-framework "${fw}")
   done <<< "${frameworks}"
 
-  log "Creating ${XCFRAMEWORK_NAME} with xcodebuild -create-xcframework ..."
-  xcodebuild -create-xcframework "${xcbf_args[@]}" -output "${WORK_XCFRAMEWORK}"
+  log "Creating ${XCFRAMEWORK_NAME} with xcodebuild -create-xcframework (framework layout) ..."
+  xcodebuild -create-xcframework "${xcbf_args[@]}" -output "${FRAMEWORK_XCFRAMEWORK}"
+  convert_framework_xcframework_to_static_library "${FRAMEWORK_XCFRAMEWORK}" "${WORK_XCFRAMEWORK}"
 }
 
 install_artifact() {

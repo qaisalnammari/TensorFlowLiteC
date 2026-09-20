@@ -145,7 +145,29 @@ validate_symbols() {
   die "Required TfLite symbols not found in ${bin}"
 }
 
-validate_slice() {
+xcframework_uses_static_libraries() {
+  local xc="$1"
+  [[ -f "${xc}/ios-arm64/${STATIC_LIB_BASENAME}" ]] || [[ -f "${xc}/ios-arm64_x86_64-simulator/${STATIC_LIB_BASENAME}" ]]
+}
+
+validate_library_slice() {
+  local slice_dir="$1"
+  local slice_id
+  slice_id="$(basename "${slice_dir}")"
+  local bin="${slice_dir}/${STATIC_LIB_BASENAME}"
+  [[ -f "${bin}" ]] || die "Missing ${STATIC_LIB_BASENAME} in slice ${slice_id}"
+
+  log "======== Slice (static library): ${slice_id} ========"
+  log "Binary: ${bin}"
+  validate_binary_slice "${bin}" "${slice_id}" "${slice_dir}/Headers/${MODULEMAP_NAME}"
+  local min_os
+  min_os="$(binary_min_os "${bin}")"
+  [[ -n "${min_os}" ]] || die "Could not determine minimum iOS for ${bin}"
+  log "Slice ${slice_id} minimum iOS (binary): ${min_os}"
+  printf '%s\n' "${min_os}"
+}
+
+validate_framework_slice() {
   local slice_dir="$1"
   local slice_id
   slice_id="$(basename "${slice_dir}")"
@@ -156,8 +178,23 @@ validate_slice() {
   bin="$(find_framework_binary "${fw}")"
   [[ -n "${bin}" && -f "${bin}" ]] || die "Missing binary in ${fw}"
 
-  log "======== Slice: ${slice_id} ========"
+  log "======== Slice (framework bundle): ${slice_id} ========"
   log "Binary: ${bin}"
+  validate_binary_slice "${bin}" "${slice_id}" "${fw}/Modules/module.modulemap"
+  local min_os
+  min_os="$(ensure_framework_info_plist "${fw}" "${slice_id}" "${bin}")"
+  if [[ -f "${fw}/Info.plist" ]]; then
+    log "Info.plist:"
+    plutil -p "${fw}/Info.plist" | while read -r line; do log "  ${line}"; done
+  fi
+  log "Slice ${slice_id} minimum iOS (binary): ${min_os}"
+  printf '%s\n' "${min_os}"
+}
+
+validate_binary_slice() {
+  local bin="$1"
+  local slice_id="$2"
+  local modulemap="$3"
 
   log "file:"
   file "${bin}" | while read -r line; do log "  ${line}"; done
@@ -176,27 +213,25 @@ validate_slice() {
     log "  (vtool unavailable; using macho_min_os.rb for deployment target)"
   fi
 
-  local min_os
-  min_os="$(ensure_framework_info_plist "${fw}" "${slice_id}" "${bin}")"
-
-  if [[ -f "${fw}/Info.plist" ]]; then
-    log "Info.plist:"
-    plutil -p "${fw}/Info.plist" | while read -r line; do log "  ${line}"; done
-  fi
-
-  local modulemap="${fw}/Modules/module.modulemap"
   if [[ -f "${modulemap}" ]]; then
-    if ! grep -q 'framework module TensorFlowLiteC' "${modulemap}"; then
+    if ! grep -q 'module TensorFlowLiteC' "${modulemap}"; then
       die "Unexpected module name in ${modulemap}"
     fi
-    log "OK module.modulemap declares framework module TensorFlowLiteC"
+    log "OK module.modulemap declares module TensorFlowLiteC"
   else
     die "Missing module.modulemap at ${modulemap}"
   fi
 
   validate_symbols "${bin}"
-  log "Slice ${slice_id} minimum iOS (binary): ${min_os}"
-  printf '%s\n' "${min_os}"
+}
+
+validate_slice() {
+  local slice_dir="$1"
+  if [[ -f "${slice_dir}/${STATIC_LIB_BASENAME}" ]]; then
+    validate_library_slice "${slice_dir}"
+  else
+    validate_framework_slice "${slice_dir}"
+  fi
 }
 
 main() {

@@ -2,12 +2,12 @@ TensorFlowLiteC version: 2.11.0
 Podspec URL: https://cdn.cocoapods.org/Specs/1/6/0/TensorFlowLiteC/2.11.0/TensorFlowLiteC.podspec.json
 Source tarball URL: https://dl.google.com/tflite-release/ios/prod/tensorflow/lite/release/ios/release/20/20221205-133425/TensorFlowLiteC/2.11.0/5f36dfd15a35e951/TensorFlowLiteC-2.11.0.tar.gz
 Source tarball SHA-256: 6d389a30d6c258120eab36ce0b568ce6072251772c41020ccd3b2ceb70cc74c0
-Downloaded at (UTC): 2026-09-20T06:22:27Z
-Pod extract root: /Users/qaisalnammari/Projects/TensorFlowLiteC-SPM/Scripts/.cache/extract/TensorFlowLiteC-2.11.0
-XCFramework path: /Users/qaisalnammari/Projects/TensorFlowLiteC-SPM/Artifacts/TensorFlowLiteC.xcframework
-XCFramework zip: /Users/qaisalnammari/Projects/TensorFlowLiteC-SPM/Artifacts/TensorFlowLiteC.xcframework.zip
-XCFramework zip SHA-256: a1030492bc7228f2d5796fd4927337783d3e669cc5dc3d3ccd7c836f0eb181d3
-Packaged at (UTC): 2026-09-20T06:22:31Z
+Downloaded at (UTC): 2026-09-20T08:12:53Z
+Pod extract root: /Users/qaisalnammari/Desktop/TensorFlowLiteC/Scripts/.cache/extract/TensorFlowLiteC-2.11.0
+XCFramework path: /Users/qaisalnammari/Desktop/TensorFlowLiteC/Artifacts/TensorFlowLiteC.xcframework
+XCFramework zip: /Users/qaisalnammari/Desktop/TensorFlowLiteC/Artifacts/TensorFlowLiteC.xcframework.zip
+XCFramework zip SHA-256: a21ae8f93aaa9af9991dc2ef34fbc5854190eafa43b8daf84066cc073492d60d
+Packaged at (UTC): 2026-09-20T08:12:57Z
 
 SwiftPM remote checksum (swift package compute-checksum):
-  a1030492bc7228f2d5796fd4927337783d3e669cc5dc3d3ccd7c836f0eb181d3
+  a21ae8f93aaa9af9991dc2ef34fbc5854190eafa43b8daf84066cc073492d60d

@@ -2,4 +2,4 @@ TensorFlowLiteC version: 2.11.0
 Podspec URL: https://cdn.cocoapods.org/Specs/1/6/0/TensorFlowLiteC/2.11.0/TensorFlowLiteC.podspec.json
 Source tarball URL: https://dl.google.com/tflite-release/ios/prod/tensorflow/lite/release/ios/release/20/20221205-133425/TensorFlowLiteC/2.11.0/5f36dfd15a35e951/TensorFlowLiteC-2.11.0.tar.gz
 Source tarball SHA-256: 6d389a30d6c258120eab36ce0b568ce6072251772c41020ccd3b2ceb70cc74c0
-Downloaded at (UTC): 2026-09-20T06:22:27Z
+Downloaded at (UTC): 2026-09-20T08:12:53Z
