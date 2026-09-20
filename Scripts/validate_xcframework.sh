@@ -214,7 +214,7 @@ validate_binary_slice() {
   fi
 
   if [[ -f "${modulemap}" ]]; then
-    if ! grep -q 'module TensorFlowLiteC' "${modulemap}"; then
+    if ! grep -qE '(^framework module|^module) TensorFlowLiteC' "${modulemap}"; then
       die "Unexpected module name in ${modulemap}"
     fi
     log "OK module.modulemap declares module TensorFlowLiteC"

@@ -12,17 +12,19 @@ let package = Package(
     products: [
         .library(
             name: "TensorFlowLiteC",
-            targets: ["TensorFlowLiteCSupport"]
+            targets: ["TensorFlowLiteC", "TensorFlowLiteCSupport"]
         ),
     ],
     targets: [
+        // Name must match the Clang module (TensorFlowLiteC) for import TensorFlowLiteC / EFR SDK.
         .binaryTarget(
-            name: "TensorFlowLiteCBinary",
+            name: "TensorFlowLiteC",
             path: "Artifacts/TensorFlowLiteC.xcframework"
         ),
+        // Applies libc++ like the official pod (s.library = 'c++').
         .target(
             name: "TensorFlowLiteCSupport",
-            dependencies: ["TensorFlowLiteCBinary"],
+            dependencies: ["TensorFlowLiteC"],
             path: "Sources/TensorFlowLiteCSupport",
             linkerSettings: [
                 .linkedLibrary("c++"),

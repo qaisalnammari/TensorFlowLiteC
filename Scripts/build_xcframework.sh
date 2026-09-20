@@ -75,6 +75,9 @@ convert_framework_xcframework_to_static_library() {
     ditto "${fw}/Headers" "${slice_prep}/Headers"
     if [[ -f "${fw}/Modules/${MODULEMAP_NAME}" ]]; then
       cp "${fw}/Modules/${MODULEMAP_NAME}" "${slice_prep}/Headers/${MODULEMAP_NAME}"
+      # Static-library XCFrameworks: plain "module" (not "framework module") for reliable Archive builds.
+      sed -i '' 's/framework module/module/' "${slice_prep}/Headers/${MODULEMAP_NAME}" 2>/dev/null \
+        || sed -i 's/framework module/module/' "${slice_prep}/Headers/${MODULEMAP_NAME}"
     fi
 
     log "Static library slice prep ${slice_id}:"
