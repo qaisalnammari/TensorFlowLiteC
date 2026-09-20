@@ -1,0 +1,20 @@
+2026-09-20T06:22:01Z slice=ios-arm64
+  Created missing Info.plist at /Users/qaisalnammari/Projects/TensorFlowLiteC-SPM/Scripts/.cache/staging/TensorFlowLiteC.xcframework/ios-arm64/TensorFlowLiteC.framework/Info.plist
+  MinimumOSVersion set to 11.0 (from binary via vtool/macho_min_os.py)
+  CFBundleShortVersionString / CFBundleVersion set to 2.11.0
+  CFBundleIdentifier set to org.tensorflow.TensorFlowLiteC
+2026-09-20T06:22:01Z slice=ios-arm64_x86_64-simulator
+  Created missing Info.plist at /Users/qaisalnammari/Projects/TensorFlowLiteC-SPM/Scripts/.cache/staging/TensorFlowLiteC.xcframework/ios-arm64_x86_64-simulator/TensorFlowLiteC.framework/Info.plist
+  MinimumOSVersion set to 14.0 (from binary via vtool/macho_min_os.py)
+  CFBundleShortVersionString / CFBundleVersion set to 2.11.0
+  CFBundleIdentifier set to org.tensorflow.TensorFlowLiteC
+2026-09-20T06:22:27Z slice=ios-arm64
+  Created missing Info.plist at /Users/qaisalnammari/Projects/TensorFlowLiteC-SPM/Scripts/.cache/staging/TensorFlowLiteC.xcframework/ios-arm64/TensorFlowLiteC.framework/Info.plist
+  MinimumOSVersion set to 11.0 (from binary via vtool/macho_min_os.rb)
+  CFBundleShortVersionString / CFBundleVersion set to 2.11.0
+  CFBundleIdentifier set to org.tensorflow.TensorFlowLiteC
+2026-09-20T06:22:28Z slice=ios-arm64_x86_64-simulator
+  Created missing Info.plist at /Users/qaisalnammari/Projects/TensorFlowLiteC-SPM/Scripts/.cache/staging/TensorFlowLiteC.xcframework/ios-arm64_x86_64-simulator/TensorFlowLiteC.framework/Info.plist
+  MinimumOSVersion set to 14.0 (from binary via vtool/macho_min_os.rb)
+  CFBundleShortVersionString / CFBundleVersion set to 2.11.0
+  CFBundleIdentifier set to org.tensorflow.TensorFlowLiteC
