@@ -142,7 +142,6 @@ The official podspec lists `ios.deployment_target` **11.0**; the simulator arm64
 - No automatic upgrade beyond configured 2.11.x  
 - No replacement with TensorFlowLiteSwift / TensorFlowLiteObjC  
 - No module rename  
-- No kewlbear binary  
 - No CocoaPods in the consumer app  
 - No patches to TensorFlow runtime — packaging and SPM exposure only  
 
