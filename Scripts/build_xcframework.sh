@@ -70,19 +70,24 @@ convert_framework_xcframework_to_static_library() {
     [[ -f "${bin}" ]] || die "Missing static binary ${bin}"
 
     local slice_prep="${prep}/${slice_id}"
-    mkdir -p "${slice_prep}/Headers"
+    local headers_root="${slice_prep}/Headers"
+    local headers_sub="${headers_root}/TensorFlowLiteC"
+    mkdir -p "${headers_sub}"
     cp "${bin}" "${slice_prep}/${STATIC_LIB_BASENAME}"
-    ditto "${fw}/Headers" "${slice_prep}/Headers"
-    if [[ -f "${fw}/Modules/${MODULEMAP_NAME}" ]]; then
-      cp "${fw}/Modules/${MODULEMAP_NAME}" "${slice_prep}/Headers/${MODULEMAP_NAME}"
-      # Static-library XCFrameworks: plain "module" (not "framework module") for reliable Archive builds.
-      sed -i '' 's/framework module/module/' "${slice_prep}/Headers/${MODULEMAP_NAME}" 2>/dev/null \
-        || sed -i 's/framework module/module/' "${slice_prep}/Headers/${MODULEMAP_NAME}"
-    fi
+    # Official headers use #import <TensorFlowLiteC/...>; that requires a TensorFlowLiteC/ subdirectory
+    # (framework header maps do this automatically; static-library XCFrameworks need it explicitly).
+    ditto "${fw}/Headers" "${headers_sub}"
+    cat > "${headers_root}/${MODULEMAP_NAME}" <<'MODULEMAP'
+module TensorFlowLiteC {
+  umbrella header "TensorFlowLiteC/TensorFlowLiteC.h"
+  export *
+  module * { export * }
+}
+MODULEMAP
 
     log "Static library slice prep ${slice_id}:"
     log "  lib: ${slice_prep}/${STATIC_LIB_BASENAME} (from ${bin})"
-    log "  headers: ${slice_prep}/Headers"
+    log "  headers: ${headers_root} (include path + TensorFlowLiteC/*.h)"
 
     xcbf_args+=(-library "${slice_prep}/${STATIC_LIB_BASENAME}" -headers "${slice_prep}/Headers")
   done < <(find "${src_xc}" -mindepth 1 -maxdepth 1 -type d ! -name '.*' | sort)

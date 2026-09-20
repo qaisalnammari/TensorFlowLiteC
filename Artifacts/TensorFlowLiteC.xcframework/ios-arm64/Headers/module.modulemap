@@ -1,5 +1,5 @@
 module TensorFlowLiteC {
-  umbrella header "TensorFlowLiteC.h"
+  umbrella header "TensorFlowLiteC/TensorFlowLiteC.h"
   export *
   module * { export * }
 }
